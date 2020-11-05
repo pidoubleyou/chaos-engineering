@@ -5,21 +5,22 @@ import org.springframework.stereotype.Service;
 import pw.chaos.events.persistence.Event;
 import pw.chaos.events.persistence.EventRepository;
 
+import java.util.Collection;
 import java.util.Optional;
 
 @Service
 public class EventService {
-  @Autowired
-  private EventRepository eventRepository;
+  @Autowired private EventRepository eventRepository;
 
   public Event createEvent(Event event) {
-    if (event.getId() == null) {
-      event.setId(1L);
-    }
     return eventRepository.save(event);
   }
 
   public Optional<Event> findEvent(Long id) {
     return eventRepository.findById(id);
+  }
+
+  public Collection<Event> getAll() {
+    return (Collection<Event>) eventRepository.findAll();
   }
 }

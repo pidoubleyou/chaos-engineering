@@ -13,8 +13,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import pw.chaos.events.persistence.Event;
 import pw.chaos.events.persistence.EventRepository;
 
+import java.util.Arrays;
 import java.util.Optional;
 
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.ArgumentMatchers.any;
@@ -39,7 +41,11 @@ class EventControllerTest {
   @Test
   @DisplayName("post creates new event")
   void create() throws Exception {
-    when(mockRepository.save(any(Event.class))).thenAnswer(i -> i.getArgument(0));
+    when(mockRepository.save(any(Event.class))).thenAnswer(i -> {
+      Event argument = i.getArgument(0);
+      argument.setId(1L);
+      return argument;
+    });
 
     EventModel event =
         new EventModel() {
@@ -84,5 +90,17 @@ class EventControllerTest {
         .andExpect(jsonPath("$.id", is((int) id)))
         .andExpect(jsonPath("$.name", is(event.getName())))
         .andExpect(jsonPath("$._links.self.href", endsWith("/events/1")));
+  }
+
+  @Test
+  @DisplayName("get all events")
+  void getAll() throws Exception {
+    Event[] events = new Event[] { new Event(), new Event() };
+    when(mockRepository.findAll()).thenReturn(Arrays.asList(events.clone()));
+
+    mockMvc.perform(get("/events").accept(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(content().json(mapper.writeValueAsString(events)));
   }
 }

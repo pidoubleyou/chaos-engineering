@@ -11,7 +11,10 @@ import org.springframework.web.bind.annotation.*;
 import pw.chaos.events.domain.EventService;
 import pw.chaos.events.persistence.Event;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "/events")
@@ -29,6 +32,13 @@ public class EventController {
     HttpHeaders headers = new HttpHeaders();
     headers.setLocation(link.toUri());
     return new ResponseEntity<>(headers, HttpStatus.CREATED);
+  }
+
+  @GetMapping
+  public Collection<EventModel> getAll() {
+    return eventService.getAll().stream()
+        .map(EventModel::new)
+        .collect(Collectors.toCollection(ArrayList::new));
   }
 
   @GetMapping("/{id}")
