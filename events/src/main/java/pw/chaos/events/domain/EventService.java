@@ -23,4 +23,10 @@ public class EventService {
   public Collection<Event> getAll() {
     return (Collection<Event>) eventRepository.findAll();
   }
+
+  public Optional<Event> startEvent(Long id) {
+    return findEvent(id)
+            .map(Event::start)
+            .map(eventRepository::save);
+  }
 }

@@ -13,11 +13,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import pw.chaos.events.persistence.Event;
 import pw.chaos.events.persistence.EventRepository;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Optional;
 
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.endsWith;
+import static org.hamcrest.Matchers.*;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -95,12 +95,59 @@ class EventControllerTest {
   @Test
   @DisplayName("get all events")
   void getAll() throws Exception {
-    Event[] events = new Event[] { new Event(), new Event() };
+    Event event1 = new Event();
+    event1.setId(1L);
+    Event event2 = new Event();
+    event2.setId(2L);
+    Event[] events = new Event[] { event1, event2 };
+    EventModel[] eventModels = new EventModel[] { new EventModel(event1), new EventModel(event2) };
     when(mockRepository.findAll()).thenReturn(Arrays.asList(events.clone()));
 
     mockMvc.perform(get("/events").accept(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(content().json(mapper.writeValueAsString(events)));
+            .andExpect(content().json(mapper.writeValueAsString(eventModels)));
+  }
+
+  @Test
+  @DisplayName("starts event and returns start time")
+  void start() throws Exception {
+    long id = 1;
+    Event event = new Event();
+    event.setId(id);
+    event.setName("Test");
+    when(mockRepository.findById(id)).thenReturn(Optional.of(event));
+    when(mockRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+
+    mockMvc
+            .perform(post("/events/1/start").accept(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$.id", is((int) id)))
+            .andExpect(jsonPath("$.name", is(event.getName())))
+            .andExpect(jsonPath("$.startTime", is(not(nullValue()))))
+            .andExpect(jsonPath("$._links.self.href", endsWith("/events/1")));
+  }
+
+  @Test
+  @DisplayName("start event again does nothing")
+  void startEventAgain() throws Exception {
+    long id = 1;
+    LocalDateTime initialStart = LocalDateTime.now();
+    Event event = new Event();
+    event.setId(id);
+    event.setName("Test");
+    event.setStart(initialStart);
+    when(mockRepository.findById(id)).thenReturn(Optional.of(event));
+    when(mockRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+
+    mockMvc
+            .perform(post("/events/1/start").accept(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$.id", is((int) id)))
+            .andExpect(jsonPath("$.name", is(event.getName())))
+            .andExpect(jsonPath("$.startTime", is(initialStart.toString())))
+            .andExpect(jsonPath("$._links.self.href", endsWith("/events/1")));
   }
 }

@@ -10,15 +10,19 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @Getter
 @Setter
 @ToString
+@EqualsAndHashCode
 @NoArgsConstructor
 public class EventModel extends RepresentationModel<EventModel> {
   private Long id;
   private String name;
+  private String startTime;
 
   public EventModel(Event entity) {
     setId(entity.getId());
     setName(entity.getName());
-
+    if (entity.getStart() != null) {
+      setStartTime(entity.getStart().toString());
+    }
     add(linkTo(methodOn(EventController.class).findById(entity.getId())).withSelfRel());
   }
 
