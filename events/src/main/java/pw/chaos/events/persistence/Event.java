@@ -33,7 +33,7 @@ public class Event {
     return this;
   }
 
-  private boolean isStarted() {
+  public boolean isStarted() {
     return start != null;
   }
 }

@@ -16,6 +16,7 @@ public class RegistrationService {
   public Optional<Registration> register(Long eventId, Registration registration) {
     return eventService
         .findEvent(eventId)
+        .filter(event -> !event.isStarted())
         .map(
             event -> {
               event.addRegistration(registration);

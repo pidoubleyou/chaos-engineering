@@ -15,6 +15,7 @@ import pw.chaos.events.persistence.Event;
 import pw.chaos.events.persistence.Registration;
 import pw.chaos.events.persistence.RegistrationRepository;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -63,6 +64,25 @@ class RegistrationControllerTest {
         .andExpect(status().isCreated())
         .andExpect(header().exists(HttpHeaders.LOCATION))
         .andExpect(header().string(HttpHeaders.LOCATION, endsWith("/events/1/registrations/2")));
+  }
+
+  @Test
+  @DisplayName("post does not create new registration for started event")
+  void registerStartedEvent() throws Exception {
+    Event event = new Event();
+    event.setId(1L);
+    event.setStart(LocalDateTime.now());
+    event.setRegistrations(new ArrayList<>());
+    when(eventService.findEvent(1L)).thenReturn(Optional.of(event));
+    RegistrationModel registrationModel = new RegistrationModel();
+    registrationModel.setName("Test Runner");
+
+    mockMvc
+            .perform(
+                    post("/events/1/registrations")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(mapper.writeValueAsString(registrationModel)))
+            .andExpect(status().isBadRequest());
   }
 
   @Test
