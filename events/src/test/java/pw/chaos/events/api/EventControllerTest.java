@@ -150,4 +150,52 @@ class EventControllerTest {
             .andExpect(jsonPath("$.startTime", is(initialStart.toString())))
             .andExpect(jsonPath("$._links.self.href", endsWith("/events/1")));
   }
+
+
+  @Test
+  @DisplayName("ends event and returns end time")
+  void end() throws Exception {
+    long id = 1;
+    Event event = new Event();
+    event.setId(id);
+    event.setStart(LocalDateTime.now());
+    event.setName("Test");
+    when(mockRepository.findById(id)).thenReturn(Optional.of(event));
+    when(mockRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+
+    mockMvc
+            .perform(post("/events/1/end").accept(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$.id", is((int) id)))
+            .andExpect(jsonPath("$.name", is(event.getName())))
+            .andExpect(jsonPath("$.startTime", is(event.getStart().toString())))
+            .andExpect(jsonPath("$.endTime", is(not(nullValue()))))
+            .andExpect(jsonPath("$._links.self.href", endsWith("/events/1")));
+  }
+
+  @Test
+  @DisplayName("end event again does nothing")
+  void endEventAgain() throws Exception {
+    long id = 1;
+    LocalDateTime initialStart = LocalDateTime.of(2020, 11, 3, 10, 0, 0);
+    LocalDateTime initialEnd = initialStart.plusMinutes(45);
+    Event event = new Event();
+    event.setId(id);
+    event.setName("Test");
+    event.setStart(initialStart);
+    event.setEnd(initialEnd);
+    when(mockRepository.findById(id)).thenReturn(Optional.of(event));
+    when(mockRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+
+    mockMvc
+            .perform(post("/events/1/end").accept(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$.id", is((int) id)))
+            .andExpect(jsonPath("$.name", is(event.getName())))
+            .andExpect(jsonPath("$.startTime", is(initialStart.toString())))
+            .andExpect(jsonPath("$.endTime", is(initialEnd.toString())))
+            .andExpect(jsonPath("$._links.self.href", endsWith("/events/1")));
+  }
 }

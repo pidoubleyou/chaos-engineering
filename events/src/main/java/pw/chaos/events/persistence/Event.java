@@ -16,6 +16,7 @@ public class Event {
   private Long id;
   private String name;
   private LocalDateTime start;
+  private LocalDateTime end;
 
   @OneToMany(fetch = FetchType.LAZY)
   private List<Registration> registrations;
@@ -35,5 +36,16 @@ public class Event {
 
   public boolean isStarted() {
     return start != null;
+  }
+
+  public Event end() {
+    if (!isEnded()) {
+      end = LocalDateTime.now();
+    }
+    return this;
+  }
+
+  private boolean isEnded() {
+    return end != null;
   }
 }

@@ -29,4 +29,10 @@ public class EventService {
             .map(Event::start)
             .map(eventRepository::save);
   }
+
+  public Optional<Event> endEvent(Long id) {
+    return findEvent(id)
+            .map(Event::end)
+            .map(eventRepository::save);
+  }
 }

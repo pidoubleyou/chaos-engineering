@@ -16,12 +16,16 @@ public class EventModel extends RepresentationModel<EventModel> {
   private Long id;
   private String name;
   private String startTime;
+  private String endTime;
 
   public EventModel(Event entity) {
     setId(entity.getId());
     setName(entity.getName());
     if (entity.getStart() != null) {
       setStartTime(entity.getStart().toString());
+    }
+    if (entity.getEnd() != null) {
+      setEndTime(entity.getEnd().toString());
     }
     add(linkTo(methodOn(EventController.class).findById(entity.getId())).withSelfRel());
   }

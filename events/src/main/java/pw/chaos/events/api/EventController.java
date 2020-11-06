@@ -51,8 +51,17 @@ public class EventController {
   }
 
   @PostMapping("/{id}/start")
-  public ResponseEntity<EventModel> startEvent(@PathVariable Long id) {
+  public ResponseEntity<EventModel> start(@PathVariable Long id) {
     Optional<Event> event = eventService.startEvent(id);
+    return event
+            .map(EventModel::new)
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.notFound().build());
+  }
+
+  @PostMapping("/{id}/end")
+  public ResponseEntity<EventModel> end(@PathVariable Long id) {
+    Optional<Event> event = eventService.endEvent(id);
     return event
             .map(EventModel::new)
             .map(ResponseEntity::ok)
