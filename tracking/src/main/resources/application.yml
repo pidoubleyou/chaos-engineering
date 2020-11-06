@@ -1,0 +1,22 @@
+
+server:
+  port: 8081
+
+logging:
+  level:
+    org.springframework.web: INFO
+
+spring:
+  r2dbc:
+    url: r2dbc:h2:file:///~/tracking?DB_CLOSE_DELAY=1
+    username: tracking
+    password: tracking
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
