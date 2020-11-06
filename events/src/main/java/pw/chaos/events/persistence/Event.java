@@ -3,10 +3,8 @@ package pw.chaos.events.persistence;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Getter
@@ -16,4 +14,13 @@ public class Event {
   @GeneratedValue(strategy = GenerationType.AUTO)
   private Long id;
   private String name;
+
+  @OneToMany(fetch = FetchType.LAZY)
+  private List<Registration> registrations;
+
+  public Registration addRegistration(Registration registration) {
+    registrations.add(registration);
+    registration.setEvent(this);
+    return registration;
+  }
 }
