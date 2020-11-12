@@ -38,4 +38,21 @@ public class TrackingService {
             })
         .flatMap(eventRepository::save);
   }
+
+  public Mono<Tracking> runnerStarted(TrackingEvent trackingEvent) {
+
+    return trackingRepository
+        .findByEventIdAndRegistrationId(
+            trackingEvent.getEventId(), trackingEvent.getRegistrationId())
+        .map(tracking -> tracking.start(trackingEvent.getTimestamp()))
+        .flatMap(trackingRepository::save);
+  }
+
+  public Mono<Tracking> runnerFinished(TrackingEvent trackingEvent) {
+    return trackingRepository
+            .findByEventIdAndRegistrationId(
+                    trackingEvent.getEventId(), trackingEvent.getRegistrationId())
+            .map(tracking -> tracking.finish(trackingEvent.getTimestamp()))
+            .flatMap(trackingRepository::save);
+  }
 }

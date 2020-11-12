@@ -11,6 +11,33 @@ spring:
     url: r2dbc:h2:file:///~/tracking?DB_CLOSE_DELAY=1
     username: tracking
     password: tracking
+  cloud:
+    function:
+      routing-expression: headers['CheckPoint']
+
+    stream:
+      kafka:
+        binder:
+          autoCreateTopic: false
+          brokers: TODO
+          jaas:
+            loginModule: org.apache.kafka.common.security.plain.PlainLoginModule
+            options:
+              username: TODO
+              password: TODO
+          configuration:
+            security:
+              protocol: SASL_PLAINTEXT
+            sasl:
+              mechanism: PLAIN
+      function:
+        routing:
+          enabled: true
+      bindings:
+        functionRouter-in-0:
+          destination: TODO
+          group: chaos-sample-local
+          partitioned: true
 
 management:
   endpoints:
