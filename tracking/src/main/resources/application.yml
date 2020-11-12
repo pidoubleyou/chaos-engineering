@@ -18,7 +18,7 @@ spring:
     stream:
       kafka:
         binder:
-          autoCreateTopic: false
+          autoCreateTopics: false
           brokers: TODO
           jaas:
             loginModule: org.apache.kafka.common.security.plain.PlainLoginModule
@@ -30,6 +30,11 @@ spring:
               protocol: SASL_PLAINTEXT
             sasl:
               mechanism: PLAIN
+        bindings:
+          functionRouter-in-0:
+            consumer:
+              enableDlq: true
+              dlqName: TODO
       function:
         routing:
           enabled: true
