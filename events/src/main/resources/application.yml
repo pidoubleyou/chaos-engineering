@@ -27,3 +27,5 @@ management:
   endpoint:
     health:
       show-details: always
+
+chaos.tracking.url: http://localhost:8081

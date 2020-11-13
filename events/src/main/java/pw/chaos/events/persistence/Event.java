@@ -45,7 +45,7 @@ public class Event {
     return this;
   }
 
-  private boolean isEnded() {
+  public boolean isEnded() {
     return end != null;
   }
 }
