@@ -33,9 +33,9 @@ spring:
         bindings:
           functionRouter-in-0:
             consumer:
-              enableDlq: true
-              dlqName: TODO
               startOffset: latest
+              autoCommitOnError: true
+              autoCommitOffset: true
       function:
         routing:
           enabled: true
