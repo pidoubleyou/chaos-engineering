@@ -7,6 +7,8 @@ logging:
     org.springframework.web: INFO
 
 spring:
+  profiles:
+    active: chaos-monkey
   r2dbc:
     url: r2dbc:h2:file:///~/tracking?DB_CLOSE_DELAY=1
     username: tracking
@@ -49,7 +51,11 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info
+        include: health,info,chaosmonkey,metrics
   endpoint:
     health:
       show-details: always
+    chaosmonkey:
+      enabled: true
+    chaosmonkeyjmx:
+      enabled: true
